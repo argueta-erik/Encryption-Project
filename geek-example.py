@@ -75,6 +75,17 @@ def encryptText(password, key):
                 evenArray[i] = chr(cip)
 
                 # Caesar Cipher Algo End
+            m += 1
 
-            for i in range(len(oddString)):
+    # Storing content of even and
+    # odd array to the string array
+    for i in range(len(oddString)):
+        if (i % 2 == 0):
+                stringArray[i] = oddArray[k]
+                k += 1
+        else:
+            stringArray[i] = evenArray[j]
+            j += 1
 
+    # Generating a Cipher Text
+    # by stringArray (Caesar Cipher)

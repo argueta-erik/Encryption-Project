@@ -1,1 +1,15 @@
 https://www.geeksforgeeks.org/dsa/custom-building-cryptography-algorithms-hybrid-cryptography/
+
+
+It is to my understanding:
+I must create an encryption algorithm for Encr(x) and a Decr(y).
+This equation must be invertible in order to determine Decr(x).
+
+For example:
+    Encr(x) = (17x + 7) mod 256
+    Decr(y) = (y - 7)/17
+The Encr(x) would apply to every character in the plaintext.
+
+I need to understand where 256 applies with the decryption, and
+review the different algorithms (ie Extended Euclidean Algorithm)
+    - This reminds me of one of the materials I read; the first Medium article.
