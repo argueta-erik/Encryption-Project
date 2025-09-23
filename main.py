@@ -1,12 +1,9 @@
 p = 67
-q = 87
-n = 5829
-tot = 5676
-m = 79
-e = 3937
-c = 1237
-d = 3277
-
+q = 47
+n = p*q	# 3149
+phi = (p-1)*(q-1) # 3036
+e = 17
+d = 893
 
 plaintext = 'H'
 ascii_text = ord(plaintext)

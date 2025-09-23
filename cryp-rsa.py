@@ -32,3 +32,4 @@ print(f"Ciphertext is {cipher_text}")
 
 decrypt_text = ((cipher_text**d) % n)
 print(f"Decrypted text is {decrypt_text}")
+

@@ -1,0 +1,8 @@
+9/23
+Finally selected appropriate values for the RSA encryption. 
+All that's left is to apply the algo to the letters in the string of the input file.
+
+Questions:
+If I am to apply the equation to indexes of an array, how will it know the length of
+digits to decrypt into the ascii values?
+How can I practice good variable naming? (Ask Prof)
