@@ -1,16 +1,13 @@
-p = 67
-q = 47
-n = p*q	# 3149
-phi = (p-1)*(q-1) # 3036
-e = 17
-d = 893
+input = "Hello World!"
 
-plaintext = 'H'
-ascii_text = ord(plaintext)
-print(f"The ASCII value of {plaintext} is {ascii_text}")
+# Capital letters: 41-90
+# ASCII Lower Case Letters: 61-122
 
-cipher_text = ((ascii_text**e) % n)
-print(f"Ciphertext is {cipher_text}")
+# asciiTest = "H"
 
-decrypt_text = ((cipher_text**d) % n)
-print(f"Decrypted text is {decrypt_text}")
+# print (asciiTest, " and ", ord(asciiTest))
+
+encrypt = []
+
+input.extend(encrypt(input))
+print(encrypt)
