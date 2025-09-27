@@ -8,7 +8,7 @@ using namespace std;
 
 // Misc
 int menu();
-
+int keyValidation();
 
 // Streams
 void inStream(ifstream& inputFile, queue<int>* subPtr);
@@ -35,7 +35,7 @@ int main() {
 	queue<int>* subjectPtr = &subjectQ;
 
 	int menuSelect{menu()};
-	int key = 12;
+	int key{}; // (1728 / 96) = 18
 
 
 	// ENCRYPTION ROUTE
@@ -48,8 +48,7 @@ int main() {
 		cout << "Encrypting..." << endl;
 		inStream(inFile, subjectPtr);
 		transposeQueue(subjectPtr);
-		shiftElems(subjectPtr, 12);
-		//intToChar(subjectPtr);
+		shiftElems(subjectPtr, 18);
 		outStream(outFile, subjectPtr);
 		cout << "Encryption complete. Your encrypted message is located in \"encrypted.txt\"" << endl;
 
@@ -60,15 +59,16 @@ int main() {
 
 		//OUTPUT STREAMS
 		ifstream decrInputFile("encrypted.txt", ios::in);
-		ofstream decrOutputFile("plaintext.txt", ios::out);
+		ofstream decrOutputFile("decrypted.txt", ios::out);
 
-		cout << "Decryption..." << endl;
+		key = keyValidation();
+		cout << "Decrypting..." << endl;
 		inStream(decrInputFile, subjectPtr);
 		deTransposeQueue(subjectPtr);
-		unshiftElems(subjectPtr, 12);
+		unshiftElems(subjectPtr, key);
 		//intToChar(subjectPtr);
 		outStream(decrOutputFile, subjectPtr);
-		cout << "Decryption complete. Your decrypted message is located in \"plaintext.txt\"" << endl;
+		cout << "Decryption complete. Your decrypted message is located in \"decrypted.txt\"" << endl;
 
 	}
 
@@ -96,6 +96,15 @@ int menu() {
 	return 0;
 }
 
+int keyValidation() {
+	cin.ignore();
+	string key{};
+	cout << "Please enter the key:\n> ";
+	getline(cin, key);
+	int result{};
+	for (char c : key) { result += c; }
+	return (result / 96);
+}
 
 // STREAMS
 void inStream(ifstream& inputFile, queue<int>* subPtr) {
@@ -154,7 +163,7 @@ int shiftElems(queue<int>* ciphPtr, int key) {
 	int elem;
 	while (!ciphPtr->empty()) {
 		elem = ciphPtr->front();
-		elem = ((elem - 32) + key % 95) + 32;
+		elem = ((((elem - 32) + key) * 7) % 95) + 32;
 		shub.push(elem);
 		ciphPtr->pop();
 	}
@@ -167,7 +176,7 @@ int shiftElems(queue<int>* ciphPtr, int key) {
 	return 1;
 }
 
-// DECRYPTION
+// DECRYPTION PROCESS
 void deTransposeQueue(queue<int>* subPtr) {
 	int ptrSize = subPtr->size();
 	bool switchQ = false;
@@ -212,12 +221,11 @@ void deTransposeQueue(queue<int>* subPtr) {
 
 
 void unshiftElems(queue<int>* subPtr, int key) {
-
 	queue<int> shub{};
         int elem;
         while (!subPtr->empty()) {
                 elem = subPtr->front();
-                elem = ((elem - 32 - key) % 95) + 32;
+                elem = ((((elem - 32)* 68) - key) % 95) + 32;
                 shub.push(elem);
                 subPtr->pop();
         }
@@ -230,7 +238,6 @@ void unshiftElems(queue<int>* subPtr, int key) {
 
 
 // Debugger Functions
-
 void printCiphQ(queue<int>* ciphPtr) {
 	while(!ciphPtr->empty()) {
 		cout << ciphPtr->front() << " ";
@@ -239,8 +246,7 @@ void printCiphQ(queue<int>* ciphPtr) {
 }
 
 
-// Used for initial char to int conversion
-void intToChar(queue<int>* ciphPtr) {
+void intToChar(queue<int>* ciphPtr) { // Used for initial char to int conversion
 	char letter;
 	queue<char> temporaryHold;
 
