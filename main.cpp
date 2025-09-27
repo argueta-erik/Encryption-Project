@@ -8,11 +8,11 @@ using namespace std;
 
 // Misc
 int menu();
-void extractInput(queue<int>* ciphPtr,string& inp);
-void checklist();
+
 
 // Streams
 void inStream(ifstream& inputFile, queue<int>* subPtr);
+void outStream(ofstream& outputFile, queue<int>* subPtr);
 
 // Encryption Process
 void transposeQueue(queue<int>* ciphPtr);
@@ -28,37 +28,47 @@ void intToChar(queue<int>* ciphPtr);
 
 
 int main() {
-	ifstream inFile("plaintext.txt", ios::in);
 
-	int menuSelect{menu()};
-	int key = 4;
 
-	string input{};
-	string cipherText {"Lps[vhip$sp"};
-
-	// Queues
+	// QUEUES
 	queue<int> subjectQ{};
 	queue<int>* subjectPtr = &subjectQ;
+
+	int menuSelect{menu()};
+	int key = 12;
 
 
 	// ENCRYPTION ROUTE
 	if (menuSelect == 1) {
-		cout << "Encryption..." << endl;
 
+		// INPUT STREAMS
+		ifstream inFile("plaintext.txt", ios::in);
+		ofstream outFile("encrypted.txt", ios::out);
+
+		cout << "Encrypting..." << endl;
 		inStream(inFile, subjectPtr);
-		//extractInput(subjectPtr, input);
-		//transposeQueue(subjectPtr);
-		//shiftElems(subjectPtr, key);
+		transposeQueue(subjectPtr);
+		shiftElems(subjectPtr, 12);
 		//intToChar(subjectPtr);
+		outStream(outFile, subjectPtr);
+		cout << "Encryption complete. Your encrypted message is located in \"encrypted.txt\"" << endl;
+
 	}
 
 	// DECRYPTION
 	else if (menuSelect == 2) {
+
+		//OUTPUT STREAMS
+		ifstream decrInputFile("encrypted.txt", ios::in);
+		ofstream decrOutputFile("plaintext.txt", ios::out);
+
 		cout << "Decryption..." << endl;
-		extractInput(subjectPtr, cipherText);
+		inStream(decrInputFile, subjectPtr);
 		deTransposeQueue(subjectPtr);
-		unshiftElems(subjectPtr, key);
-		intToChar(subjectPtr);
+		unshiftElems(subjectPtr, 12);
+		//intToChar(subjectPtr);
+		outStream(decrOutputFile, subjectPtr);
+		cout << "Decryption complete. Your decrypted message is located in \"plaintext.txt\"" << endl;
 
 	}
 
@@ -87,18 +97,24 @@ int menu() {
 }
 
 
-void extractInput(queue<int>* ciphPtr, string& input) {
-	int parse{0};
-	for (char c : input) {		// implicit conversion of char to its ASCII value
-		ciphPtr->push(c);
+// STREAMS
+void inStream(ifstream& inputFile, queue<int>* subPtr) {
+	if (!inputFile) { cerr << "Error: Could not open file." << endl; exit(1); }
+	string word{};
+	while (!inputFile.eof()) {
+		getline(inputFile, word);
+		for (char c : word) { int ascii = c; subPtr->push(ascii); }
 	}
 }
 
-void inStream(ifstream& inputFile, queue<int>* subPtr) {
-	if (!inputFile) { cerr << "Error: Could not open file." << endl; exit(1); }
-	string inputText{};
-	while (!inputFile.eof()) {getline(inputFile, inputText);}
-	cout << inputText << endl;
+void outStream(ofstream& outFile, queue<int>* subPtr) {
+	if (!outFile) { cerr << "File could not be created or opened" << endl; exit(-1); }
+	while (!subPtr->empty()) {
+		char letter{};
+		letter = subPtr->front();
+		outFile << letter;
+		subPtr->pop();
+	}
 }
 
 
@@ -226,10 +242,19 @@ void printCiphQ(queue<int>* ciphPtr) {
 // Used for initial char to int conversion
 void intToChar(queue<int>* ciphPtr) {
 	char letter;
+	queue<char> temporaryHold;
+
 	while(!ciphPtr->empty()) {
+		cout << "Front of ciphPtr: " << ciphPtr->front() << endl;
 		letter = ciphPtr->front();
-		cout << letter;
-		//cout << ciphPtr->front();
+		cout << "Letter conversion: " << letter << endl;
+		temporaryHold.push(letter);
 		ciphPtr->pop();
 	}
+	while (!temporaryHold.empty()) {
+		ciphPtr->push(temporaryHold.front());
+		temporaryHold.pop();
+	}
 }
+
+
