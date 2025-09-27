@@ -1,50 +1,55 @@
 #include <iostream>
 #include <queue>
 #include <cmath>
-
+#include <fstream>
+#include <cstdlib>
 using namespace std;
 
+
+// Misc
 int menu();
+void extractInput(queue<int>* ciphPtr,string& inp);
+void checklist();
+
+// Streams
+void inStream(ifstream& inputFile, queue<int>* subPtr);
 
 // Encryption Process
-void extractInput(queue<int>* ciphPtr,string& inp);
 void transposeQueue(queue<int>* ciphPtr);
-void shifElems(queue<int>* ciphPtr, int key);
+int shiftElems(queue<int>* ciphPtr, int key);
 
 // Decryption Process
 void deTransposeQueue(queue<int>* subPtr);
-//void unshiftElems(queue<int>* subPtr);
+void unshiftElems(queue<int>* subPtr, int key);
 
 // Debug Function Prototypes
 void printCiphQ(queue<int>* ciphPtr);
-void intToChar(queue<int>* ciphPtr);	// Used for initial char to int conversion
+void intToChar(queue<int>* ciphPtr);
 
 
 int main() {
+	ifstream inFile("plaintext.txt", ios::in);
 
 	int menuSelect{menu()};
-	int key = 12;
+	int key = 4;
 
-	string input = "Hello World";
-	string cipherText {"t9<$?129L<9"};
+	string input{};
+	string cipherText {"Lps[vhip$sp"};
 
 	// Queues
 	queue<int> subjectQ{};
 	queue<int>* subjectPtr = &subjectQ;
 
 
-	//for (char c : cipherText) {subjectQ.push(c);}
-
-
 	// ENCRYPTION ROUTE
 	if (menuSelect == 1) {
 		cout << "Encryption..." << endl;
 
-		extractInput(subjectPtr, input);
-		transposeQueue(subjectPtr);
-		shifElems(subjectPtr, key);
-		intToChar(subjectPtr);
-		//printCiphQ(subjectPtr);
+		inStream(inFile, subjectPtr);
+		//extractInput(subjectPtr, input);
+		//transposeQueue(subjectPtr);
+		//shiftElems(subjectPtr, key);
+		//intToChar(subjectPtr);
 	}
 
 	// DECRYPTION
@@ -52,7 +57,7 @@ int main() {
 		cout << "Decryption..." << endl;
 		extractInput(subjectPtr, cipherText);
 		deTransposeQueue(subjectPtr);
-		//printCiphQ(subjectPtr);
+		unshiftElems(subjectPtr, key);
 		intToChar(subjectPtr);
 
 	}
@@ -64,17 +69,21 @@ int main() {
 
 // MENU
 int menu() {
-	int selection{};
-	cout << "Hello! Please enter a enter a number for your selection: " << endl;
-	cout << "[1] Encryption\n";
-	cout << "[2] Decryption\n\n> ";
-
-	cin >> selection;
-	if (selection == 1) { return 1; }
-	else if (selection == 2) { return 2; }
-
-	else { return 0; }
-
+	char selection{};
+	cout << "Hello! Welcome to my basic Encryptor/Decryptor program!" << endl;
+	cout << "Before proceeding, Please ensure there is a text file within the same directory "
+			"as this executable." << endl;
+	cout << "The title of the text file should be name \"plaintext.txt\"" << endl;
+	cout << "\n[1] Encryption\n";
+	cout << "[2] Decryption\n";
+	cout << "[3] Exit\n\n> ";
+	while(cin >> selection) {
+		if (selection == 49) { return 1; }
+		else if (selection == 50) { return 2; }
+		else if (selection == 51) { cout << "Thank you for using my program!\n"; exit(0); }
+		else {cout << "\n\nPlease enter a valid selection.\n> ";}
+	}
+	return 0;
 }
 
 
@@ -83,6 +92,13 @@ void extractInput(queue<int>* ciphPtr, string& input) {
 	for (char c : input) {		// implicit conversion of char to its ASCII value
 		ciphPtr->push(c);
 	}
+}
+
+void inStream(ifstream& inputFile, queue<int>* subPtr) {
+	if (!inputFile) { cerr << "Error: Could not open file." << endl; exit(1); }
+	string inputText{};
+	while (!inputFile.eof()) {getline(inputFile, inputText);}
+	cout << inputText << endl;
 }
 
 
@@ -117,12 +133,12 @@ void transposeQueue(queue<int>* ciphPtr) {
 	}
 }
 
-void shifElems(queue<int>* ciphPtr, int key) {
+int shiftElems(queue<int>* ciphPtr, int key) {
 	queue<int> shub{};
 	int elem;
 	while (!ciphPtr->empty()) {
 		elem = ciphPtr->front();
-		elem = ((elem + key) % 95) + 32;
+		elem = ((elem - 32) + key % 95) + 32;
 		shub.push(elem);
 		ciphPtr->pop();
 	}
@@ -131,6 +147,8 @@ void shifElems(queue<int>* ciphPtr, int key) {
 		ciphPtr->push(shub.front());
 		shub.pop();
 	}
+
+	return 1;
 }
 
 // DECRYPTION
@@ -143,14 +161,11 @@ void deTransposeQueue(queue<int>* subPtr) {
 	queue<int>* s1 = &split1;
 	queue<int>* s2 = &split2;
 
-	cout << "ptrSize: " << ptrSize << endl; // size = 11
-
 	// Suppose the string is odd numebered:
 	// we need ceil of split string on first split
 	double splitSize{};
 	if (ptrSize % 2 == 1) {splitSize = 1 + (ptrSize / 2); }
 	else {splitSize = ptrSize / 2; }
-	cout << "splitSize: " << splitSize << endl;
 
 	// insert by split size and then rest of ptrQ
 	for (int i{}; i < splitSize; i++) {
@@ -177,14 +192,24 @@ void deTransposeQueue(queue<int>* subPtr) {
 			switchQ = false;
 		}
 	}
+}
 
-	//printCiphQ(subPtr);
-	intToChar(subPtr);
-/*
-	printCiphQ(s1);
-	cout << endl;
-	printCiphQ(s2);
-*/
+
+void unshiftElems(queue<int>* subPtr, int key) {
+
+	queue<int> shub{};
+        int elem;
+        while (!subPtr->empty()) {
+                elem = subPtr->front();
+                elem = ((elem - 32 - key) % 95) + 32;
+                shub.push(elem);
+                subPtr->pop();
+        }
+
+        while (!shub.empty()) {
+                subPtr->push(shub.front());
+                shub.pop();
+        }
 }
 
 
