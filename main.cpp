@@ -16,7 +16,7 @@ void outStream(ofstream& outputFile, queue<int>* subPtr);
 
 // Encryption Process
 void transposeQueue(queue<int>* ciphPtr);
-int shiftElems(queue<int>* ciphPtr, int key);
+void shiftElems(queue<int>* ciphPtr, int key);
 
 // Decryption Process
 void deTransposeQueue(queue<int>* subPtr);
@@ -80,9 +80,8 @@ int main() {
 int menu() {
 	char selection{};
 	cout << "Hello! Welcome to my basic Encryptor/Decryptor program!" << endl;
-	cout << "Before proceeding, Please ensure there is a text file within the same directory "
-			"as this executable." << endl;
-	cout << "The title of the text file should be name \"plaintext.txt\"" << endl;
+	cout << "Before proceeding, Please ensure the following text files are in the same directory as this executable:" << endl;
+	cout << "\"plaintext.txt\"\n\"encrypted.txt\"\n\"decrypted.txt\"" << endl;
 	cout << "\n[1] Encryption\n";
 	cout << "[2] Decryption\n";
 	cout << "[3] Exit\n\n> ";
@@ -156,7 +155,7 @@ void transposeQueue(queue<int>* ciphPtr) {
 	}
 }
 
-int shiftElems(queue<int>* ciphPtr, int key) {
+void shiftElems(queue<int>* ciphPtr, int key) {
 	queue<int> shub{}; //shift-sub queue
 	int elem;
 
@@ -172,8 +171,6 @@ int shiftElems(queue<int>* ciphPtr, int key) {
 		ciphPtr->push(shub.front());
 		shub.pop();
 	}
-
-	return 1;
 }
 
 // DECRYPTION PROCESS
