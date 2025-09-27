@@ -66,13 +66,12 @@ int main() {
 		inStream(decrInputFile, subjectPtr);
 		deTransposeQueue(subjectPtr);
 		unshiftElems(subjectPtr, key);
-		//intToChar(subjectPtr);
 		outStream(decrOutputFile, subjectPtr);
 		cout << "Decryption complete. Your decrypted message is located in \"decrypted.txt\"" << endl;
 
 	}
 
-	else {}
+	else if (menuSelect == -1) { cerr << "An error occurred somewhere at menu." << endl; }
 	return 0;
 }
 
@@ -93,7 +92,7 @@ int menu() {
 		else if (selection == 51) { cout << "Thank you for using my program!\n"; exit(0); }
 		else {cout << "\n\nPlease enter a valid selection.\n> ";}
 	}
-	return 0;
+	return -1;
 }
 
 int keyValidation() {
@@ -129,41 +128,42 @@ void outStream(ofstream& outFile, queue<int>* subPtr) {
 
 // ENCRYPTION PROCESS
 void transposeQueue(queue<int>* ciphPtr) {
-	queue<int> transpose1{};
-	queue<int> transpose2{};
-	queue<int> mix{};
+	queue<int> transpose1{}; // inserts portion A of queue
+	queue<int> transpose2{}; // inserts portion B of queue
 
-	bool switchQ = false;
+	bool switchQ = false;	// gate that dictates A and B portion of the queue
 	while (!ciphPtr->empty()) {
 		if (!switchQ) {
-			transpose1.push(ciphPtr->front());
+			transpose1.push(ciphPtr->front());	// portion A
 			ciphPtr->pop();
 			switchQ = true;
 		}
 		else {
-			transpose2.push(ciphPtr->front());
+			transpose2.push(ciphPtr->front());	// portion B
 			ciphPtr->pop();
 			switchQ = false;
 		}
 	}
 
-	while (!transpose1.empty()) {
+	while (!transpose1.empty()) {	// inserts all of portion A's into the original queue
 		ciphPtr->push(transpose1.front());
 		transpose1.pop();
 	}
 
-	while (!transpose2.empty()) {
+	while (!transpose2.empty()) {	// concatenates all of portion B to original queue
 		ciphPtr->push(transpose2.front());
 		transpose2.pop();
 	}
 }
 
 int shiftElems(queue<int>* ciphPtr, int key) {
-	queue<int> shub{};
+	queue<int> shub{}; //shift-sub queue
 	int elem;
+
+	// grabs ascii of queue elements and transforms to different ascii value using key
 	while (!ciphPtr->empty()) {
-		elem = ciphPtr->front();
-		elem = ((((elem - 32) + key) * 7) % 95) + 32;
+		elem = ciphPtr->front();	// variable to hold ascii element
+		elem = ((((elem - 32) + key) * 7) % 95) + 32;	// key serves as shifter, *7 to mix add layer, %95 maintain within the printable ascii conversion, +32 shift back up ascii table values
 		shub.push(elem);
 		ciphPtr->pop();
 	}
@@ -183,28 +183,26 @@ void deTransposeQueue(queue<int>* subPtr) {
 	queue<int> split1 {};
 	queue<int> split2 {};
 
-	queue<int>* s1 = &split1;
-	queue<int>* s2 = &split2;
-
 	// Suppose the string is odd numebered:
 	// we need ceil of split string on first split
 	double splitSize{};
 	if (ptrSize % 2 == 1) {splitSize = 1 + (ptrSize / 2); }
 	else {splitSize = ptrSize / 2; }
 
-	// insert by split size and then rest of ptrQ
+	// insert by split size and then rest of subPtr
 	for (int i{}; i < splitSize; i++) {
 		split1.push(subPtr->front());
 		subPtr->pop();
 	}
 
-	// To ensure the ptrQ is emptied
+	// To ensure the subPtr is emptied
 	while (!subPtr->empty()) {
 		split2.push(subPtr->front());
 		subPtr->pop();
 	}
 
 
+	// similar, but reversed of the ENCRYPTION function(s)
 	for (int i{0}; i < ptrSize; i++) {
 		if (!switchQ) {
 			subPtr->push(split1.front());
@@ -238,7 +236,7 @@ void unshiftElems(queue<int>* subPtr, int key) {
 
 
 // Debugger Functions
-void printCiphQ(queue<int>* ciphPtr) {
+void printCiphQ(queue<int>* ciphPtr) { 
 	while(!ciphPtr->empty()) {
 		cout << ciphPtr->front() << " ";
 		ciphPtr->pop();
