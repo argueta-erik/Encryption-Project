@@ -50,6 +50,7 @@ int main() {
 		transposeQueue(subjectPtr);
 		shiftElems(subjectPtr, 18);
 		outStream(outFile, subjectPtr);
+		inFile.close(); outFile.close();
 		cout << "Encryption complete. Your encrypted message is located in \"encrypted.txt\"" << endl;
 
 	}
@@ -67,6 +68,7 @@ int main() {
 		deTransposeQueue(subjectPtr);
 		unshiftElems(subjectPtr, key);
 		outStream(decrOutputFile, subjectPtr);
+		decrInputFile.close(); decrOutputFile.close();
 		cout << "Decryption complete. Your decrypted message is located in \"decrypted.txt\"" << endl;
 
 	}
